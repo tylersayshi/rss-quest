@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "incremental": true,
     "strict": true,
     "target": "esnext",
     "downlevelIteration": true,

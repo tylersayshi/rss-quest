@@ -15,11 +15,19 @@
     "waku": "0.21.22"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.0.9",
+    "@react-aria/button": "^3.12.0",
+    "@react-aria/dialog": "^3.5.22",
+    "@react-aria/focus": "^3.20.0",
+    "@react-aria/overlays": "^3.26.0",
+    "@react-aria/searchfield": "^3.8.1",
+    "@tailwindcss/postcss": "4.0.12",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
+    "cmdk": "^1.0.4",
+    "lucide-react": "^0.479.0",
     "postcss": "8.5.3",
-    "tailwindcss": "4.0.9",
-    "typescript": "5.7.3"
+    "rss-parser": "^3.13.0",
+    "tailwindcss": "4.0.12",
+    "typescript": "5.8.2"
   }
 }
