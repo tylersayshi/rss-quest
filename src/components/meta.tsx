@@ -1,6 +1,7 @@
 export const Meta = () => {
   return (
     <>
+      <title>a walk through the world of RSS</title>
       <meta property="og:type" content="website" />
       <meta property="og:image" content="https://rss.quest/images/koala.png" />
 
