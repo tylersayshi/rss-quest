@@ -47,7 +47,7 @@ export const Footer = () => {
         </svg>
       </a>
       <a
-        href="https://github.com/tylur/rss-quest"
+        href="https://github.com/tylersayshi/rss-quest"
         target="_blank"
         rel="noreferrer"
         className="hover:text-blue-500"
