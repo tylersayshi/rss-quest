@@ -1,37 +1,7 @@
 import { Compass, Newspaper } from "lucide-react";
 
-import { rssFeedUrls } from "../_data/feeds";
-import type { RSSFeed } from "../types";
-import Parser from "rss-parser";
 import { SearchTrigger } from "../components/search-trigger";
-
-const parser = new Parser();
-
-async function getFeedData() {
-  const feedPromises = rssFeedUrls.map(async (url) => {
-    try {
-      const feed = await parser.parseURL(url);
-      return {
-        title: feed.title || "",
-        description: feed.description || "",
-        link: feed.link || "",
-        items:
-          feed.items?.map((item) => ({
-            title: item.title || "",
-            description: item.contentSnippet || item.content || "",
-            link: item.link || "",
-            pubDate: item.pubDate || "",
-          })) || [],
-      };
-    } catch (error) {
-      console.error(`Error fetching feed from ${url}:`, error);
-      return null;
-    }
-  });
-
-  const results = await Promise.all(feedPromises);
-  return results.filter((feed): feed is RSSFeed => feed !== null);
-}
+import { getFeedData } from "../_data/feeds";
 
 export default async function App() {
   const feeds = await getFeedData();

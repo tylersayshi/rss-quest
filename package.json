@@ -4,8 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "waku dev",
-    "build": "waku build --with-netlify-static",
+    "dev": "VITE_EXPERIMENTAL_WAKU_ROUTER=true waku dev",
+    "build": "VITE_EXPERIMENTAL_WAKU_ROUTER=true waku build --with-netlify-static",
     "start": "waku start"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "@react-aria/overlays": "^3.26.0",
     "@react-aria/searchfield": "^3.8.1",
     "@tailwindcss/postcss": "4.0.12",
+    "@tanstack/react-query": "^5.67.2",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "cmdk": "^1.0.4",
