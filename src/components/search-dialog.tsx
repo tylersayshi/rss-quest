@@ -182,7 +182,10 @@ export function SearchDialog({
   usePreventScroll();
 
   const [query, setQuery] = useState(defaultValue || "");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<{
+    results: SearchResult[];
+    query: string;
+  }>({ results: [], query: "" });
 
   // Fetch the search index using React Query
   const {
@@ -202,16 +205,20 @@ export function SearchDialog({
   // Perform search when query changes
   const performSearch = useCallback(
     (searchQuery: string) => {
-      if (!searchEngine || !searchQuery.trim()) {
-        setResults([]);
+      if (!searchEngine || searchQuery === results.query) {
+        return;
+      } else if (!searchQuery.trim()) {
+        setResults({ results: [], query: searchQuery });
         return;
       }
 
       const searchResults = searchEngine.search(searchQuery, 10);
-      setResults(searchResults);
+      console.log("searchResults", searchResults);
+      setResults({ results: searchResults, query: searchQuery });
     },
-    [searchEngine]
+    [searchEngine, results.query]
   );
+  console.log("results", results.results);
 
   // Debounce search input
   useEffect(() => {
@@ -277,12 +284,12 @@ export function SearchDialog({
               <div className="py-6 text-center text-sm text-red-500">
                 Error loading search index
               </div>
-            ) : results.length === 0 ? (
+            ) : results.results.length === 0 ? (
               <Command.Empty className="py-6 text-center text-sm text-gray-500">
                 {query.trim() ? "No articles found" : "Start typing to search"}
               </Command.Empty>
             ) : (
-              results.map((result) => (
+              results.results.map((result) => (
                 <Command.Item
                   key={result.id}
                   onSelect={() => {
