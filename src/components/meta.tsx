@@ -27,6 +27,7 @@ export const Meta = () => {
         href="/images/favicon-16x16.png"
       />
       <link rel="manifest" href="/images/site.webmanifest" />
+      <link rel="preload" href="/images/koala.png" as="image" />
     </>
   );
 };
