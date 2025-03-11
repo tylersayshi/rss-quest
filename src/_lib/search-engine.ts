@@ -67,7 +67,7 @@ export class SearchEngine {
     const scores: Record<string, number> = {};
 
     // Process each search token
-    searchTokens.forEach((token) => {
+    for (const token of searchTokens) {
       // Look for exact matches
       if (this.invertedIndex[token]) {
         const matchingDocs = this.invertedIndex[token];
@@ -79,7 +79,7 @@ export class SearchEngine {
       }
 
       // Look for prefix matches (for partial word search)
-      Object.keys(this.invertedIndex).forEach((indexedToken) => {
+      for (const indexedToken of Object.keys(this.invertedIndex)) {
         if (indexedToken.startsWith(token) && indexedToken !== token) {
           const matchingDocs = this.invertedIndex[indexedToken];
 
@@ -89,8 +89,27 @@ export class SearchEngine {
             scores[docId] = (scores[docId] || 0) + score;
           }
         }
-      });
-    });
+      }
+
+      // Search directly in document titles and feed titles
+      for (const docId in this.documentMap) {
+        const doc = this.documentMap[docId]!;
+        const titleLower = doc.title.toLowerCase();
+        const feedTitleLower = doc.feedTitle.toLowerCase();
+
+        // Direct title match (highest weight)
+        if (titleLower.includes(token)) {
+          const titleScore = 2.0; // Higher weight for title matches
+          scores[docId] = (scores[docId] || 0) + titleScore;
+        }
+
+        // Feed title match (medium weight)
+        if (feedTitleLower.includes(token)) {
+          const feedScore = 1.0;
+          scores[docId] = (scores[docId] || 0) + feedScore;
+        }
+      }
+    }
 
     // Convert scores to array and sort
     const results: SearchResult[] = Object.entries(scores)

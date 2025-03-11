@@ -3,16 +3,18 @@
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { SearchEngine, SearchIndex, SearchResult } from "../_lib/search-engine";
+import { SearchEngine, SearchResult } from "../_lib/search-engine";
 import { useRouter_UNSTABLE } from "waku";
 import { ListBox, ListBoxItem, Header, Text } from "react-aria-components";
 
-const fetchSearchIndex = async (): Promise<SearchIndex> => {
+const fetchSearchIndex = async (): Promise<SearchEngine> => {
   const response = await fetch("/api/search.json");
   if (!response.ok) {
     throw new Error("Failed to load search index");
   }
-  return response.json();
+  const index = await response.json();
+  const engine = new SearchEngine(index);
+  return engine;
 };
 
 const ABC = "abcdefghijklmnopqrstuvwxyz";
@@ -27,18 +29,15 @@ export const Searcher = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const {
-    data: searchIndex,
+    data: searchEngine,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["searchIndex"],
     queryFn: fetchSearchIndex,
-    staleTime: Infinity, // The index doesn't change during a session
+    staleTime: Infinity,
   });
 
-  const searchEngine = searchIndex ? new SearchEngine(searchIndex) : null;
-
-  // Perform search when query changes
   useEffect(() => {
     if (!searchEngine || query === results.query) {
       return;
