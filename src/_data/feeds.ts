@@ -112,7 +112,9 @@ async function getFeedData() {
   });
 
   const results = await Promise.all(feedPromises);
-  console.log(results.reduce((acc, cur) => acc + cur!.items.length, 0));
+  console.log(
+    results.reduce((acc, cur) => acc + cur!.items.length, 0) + " items fetched"
+  );
   return results.filter((feed): feed is RSSFeed => feed !== null);
 }
 
