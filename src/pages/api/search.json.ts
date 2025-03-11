@@ -1,4 +1,4 @@
-import { getFeedData } from "../../_data/feeds";
+import { feedDataPromise } from "../../_data/feeds";
 import { RSSFeed } from "../../types";
 
 interface SearchIndex {
@@ -214,7 +214,7 @@ function buildSearchIndex(feeds: RSSFeed[]): SearchIndex {
 export const GET = async () => {
   try {
     // Get the feed data
-    const feeds = await getFeedData();
+    const feeds = await feedDataPromise;
 
     // Build the search index
     const searchIndex = buildSearchIndex(feeds);
