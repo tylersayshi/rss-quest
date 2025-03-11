@@ -22,7 +22,6 @@ const rssFeedUrls = [
     "https://simonwillison.net/atom/everything/",
     "https://aurorascharff.no/rss.xml",
     "https://kettanaito.com/blog/rss.xml",
-    "https://backend.cafe/rss.xml",
     "https://souporserious.com/rss.xml",
     "https://offlinemark.com/feed/",
     "https://fettblog.eu/feed.xml",
