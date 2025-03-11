@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@tyler/duckhawk':
+        specifier: npm:@jsr/tyler__duckhawk@^0.3.2
+        version: '@jsr/tyler__duckhawk@0.3.2'
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -347,6 +350,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@jsr/tyler__duckhawk@0.3.2':
+    resolution: {integrity: sha512-WaPhTKlAJYjROQlMH1UIzNPoZwHNq6o8r9zrPEfgdE6qOjHEqbwkPD3tbgvKtQd3i1PzuKscr2+TXZTT8bgNCQ==, tarball: https://npm.jsr.io/~/11/@jsr/tyler__duckhawk/0.3.2.tgz}
 
   '@radix-ui/primitive@1.1.1':
     resolution: {integrity: sha512-SJ31y+Q/zAyShtXJc8x83i9TYdbAfHZ++tUZnvjJJqFjzsdUnKsxPL6IEtBlxKkU7yzer//GQtZSV4GbldL3YA==}
@@ -2283,6 +2289,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@jsr/tyler__duckhawk@0.3.2': {}
 
   '@radix-ui/primitive@1.1.1': {}
 

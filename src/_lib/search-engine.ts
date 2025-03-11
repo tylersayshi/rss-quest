@@ -92,6 +92,8 @@ export class SearchEngine {
       });
     });
 
+    // needs to search Document map
+
     // Convert scores to array and sort
     const results: SearchResult[] = Object.entries(scores)
       .map(([docId, score]) => ({

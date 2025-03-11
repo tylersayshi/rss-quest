@@ -9,6 +9,7 @@
     "start": "waku start"
   },
   "dependencies": {
+    "@tyler/duckhawk": "npm:@jsr/tyler__duckhawk@^0.3.2",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-server-dom-webpack": "19.0.0",

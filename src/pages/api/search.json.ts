@@ -1,4 +1,4 @@
-import { feedDataPromise } from "../../_data/feeds";
+import { getFeedData } from "../../_data/feeds";
 import { RSSFeed } from "../../types";
 
 interface SearchIndex {
@@ -129,12 +129,17 @@ function buildSearchIndex(feeds: RSSFeed[]): SearchIndex {
       // Process title and description to count term frequencies
       const titleTokens = tokenize(item.title);
       const descriptionTokens = tokenize(item.description);
+      const contentTokens = tokenize(item.content);
 
       // Count unique terms in this document
-      const uniqueTerms = new Set([...titleTokens, ...descriptionTokens]);
-      uniqueTerms.forEach((term) => {
+      const uniqueTerms = new Set([
+        ...titleTokens,
+        ...descriptionTokens,
+        ...contentTokens,
+      ]);
+      for (const term of uniqueTerms) {
         termFrequency[term] = (termFrequency[term] || 0) + 1;
-      });
+      }
     });
   });
 
@@ -183,7 +188,6 @@ function buildSearchIndex(feeds: RSSFeed[]): SearchIndex {
     });
   });
 
-  // Create a lookup table for document retrieval
   const documentMap: DocumentMap = {};
   docIdMap.forEach((location, docId) => {
     const feed = feeds[location.feedIndex]!;
@@ -214,11 +218,11 @@ function buildSearchIndex(feeds: RSSFeed[]): SearchIndex {
 export const GET = async () => {
   try {
     // Get the feed data
-    const feeds = await feedDataPromise;
-
+    const feeds = await getFeedData();
     // Build the search index
+    console.time("Building search index");
     const searchIndex = buildSearchIndex(feeds);
-
+    console.timeEnd("Building search index");
     // Return the index as JSON
     return Response.json(searchIndex);
   } catch (error) {

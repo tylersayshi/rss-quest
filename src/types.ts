@@ -8,6 +8,8 @@ export interface RSSFeed {
 export interface RSSItem {
   title: string;
   description: string;
+  content: string;
+  author: string;
   link: string;
   pubDate: string;
 }
