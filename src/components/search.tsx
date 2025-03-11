@@ -7,14 +7,17 @@ import { SearchEngine, SearchResult } from "../_lib/search-engine";
 import { useRouter_UNSTABLE } from "waku";
 import { ListBox, ListBoxItem, Header, Text } from "react-aria-components";
 
-const fetchSearchIndex = async (): Promise<SearchEngine> => {
+const fetchSearchIndex = async (): Promise<{
+  engine: SearchEngine;
+  postCount: number;
+}> => {
   const response = await fetch("/api/search.json");
   if (!response.ok) {
     throw new Error("Failed to load search index");
   }
-  const index = await response.json();
+  const { index, postCount } = await response.json();
   const engine = new SearchEngine(index);
-  return engine;
+  return { engine, postCount };
 };
 
 const ABC = "abcdefghijklmnopqrstuvwxyz";
@@ -29,7 +32,7 @@ export const Searcher = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const {
-    data: searchEngine,
+    data: search,
     isLoading,
     error,
   } = useQuery({
@@ -39,16 +42,16 @@ export const Searcher = () => {
   });
 
   useEffect(() => {
-    if (!searchEngine || query === results.query) {
+    if (!search || query === results.query) {
       return;
     } else if (!query.trim()) {
       setResults({ results: [], query });
       return;
     }
 
-    const searchResults = searchEngine.search(query, 25);
+    const searchResults = search.engine.search(query, 25);
     setResults({ results: searchResults, query });
-  }, [query, searchEngine]);
+  }, [query, search]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -98,7 +101,7 @@ export const Searcher = () => {
         />
         <div className="flex-1">
           {/* Search bar */}
-          <div className="relative">
+          <div className="relative flex flex-col gap-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
@@ -110,7 +113,7 @@ export const Searcher = () => {
               placeholder={
                 isLoading
                   ? "Loading search index..."
-                  : "Search RSS feeds... (Press '/' to focus)"
+                  : `Search ${search?.postCount} posts...`
               }
               className="w-full py-4 pl-10 pr-4 text-lg border rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               disabled={isLoading}

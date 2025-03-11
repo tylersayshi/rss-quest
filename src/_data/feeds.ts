@@ -10,6 +10,7 @@ const rssFeedUrls = [
   "https://overreacted.io/rss.xml",
   "https://cassidoo.co/rss.xml",
   "https://waku.gg/api/rss.xml",
+  "https://blog.isquaredsoftware.com/index.xml",
 
   // from francois
   "https://francoisbest.com/posts/feed/rss.xml",

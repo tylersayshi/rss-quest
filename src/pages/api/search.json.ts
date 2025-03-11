@@ -219,12 +219,13 @@ export const GET = async () => {
   try {
     // Get the feed data
     const feeds = await getFeedData();
+    const postCount = feeds.reduce((acc, cur) => acc + cur.items.length, 0);
     // Build the search index
     console.time("Building search index");
     const searchIndex = buildSearchIndex(feeds);
     console.timeEnd("Building search index");
     // Return the index as JSON
-    return Response.json(searchIndex);
+    return Response.json({ index: searchIndex, postCount });
   } catch (error) {
     console.error("Error generating search index:", error);
     return new Response(
