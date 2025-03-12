@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useDeferredValue } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { SearchEngine, SearchResult } from "../_lib/search-engine";
 import { useRouter_UNSTABLE } from "waku";
-import { ListBox, ListBoxItem, Header, Text } from "react-aria-components";
 
 const fetchSearchIndex = async (): Promise<{
   engine: SearchEngine;
@@ -20,17 +19,17 @@ const fetchSearchIndex = async (): Promise<{
   return { engine, postCount };
 };
 
-const ABC = "abcdefghijklmnopqrstuvwxyz";
-
 export const Searcher = () => {
   const router = useRouter_UNSTABLE();
   const [query, setQuery] = useState("");
+  const lazyQuery = useDeferredValue(query);
   const [results, setResults] = useState<{
     results: SearchResult[];
     query: string;
   }>({ results: [], query: "" });
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const listboxRef = useRef<HTMLDivElement>(null);
+  const listboxRef = useRef<HTMLUListElement>(null);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   const {
     data: search,
@@ -43,33 +42,25 @@ export const Searcher = () => {
   });
 
   useEffect(() => {
-    if (!search || query === results.query) {
+    if (!search || lazyQuery === results.query) {
       return;
-    } else if (!query.trim()) {
-      setResults({ results: [], query });
+    } else if (!lazyQuery.trim()) {
+      setResults({ results: [], query: lazyQuery });
       return;
     }
 
-    const searchResults = search.engine.search(query, 25);
-    setResults({ results: searchResults, query });
-  }, [query, search]);
+    const searchResults = search.engine.search(lazyQuery, 25);
+    setResults({ results: searchResults, query: lazyQuery });
+  }, [lazyQuery, search]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        searchInputRef.current?.blur();
-        return;
-      }
       if (
         document.activeElement !== searchInputRef.current &&
         ((e.metaKey && e.key === "k") || e.key === "/")
       ) {
         e.preventDefault();
         searchInputRef.current?.focus();
-
-        if (ABC.includes(e.key)) {
-          setQuery((prevQuery) => prevQuery + e.key);
-        }
       }
     };
 
@@ -87,8 +78,28 @@ export const Searcher = () => {
     }
   }, [router.query]);
 
+  useEffect(() => {
+    if (lazyQuery) {
+      router.replace(`/?q=${encodeURIComponent(lazyQuery)}`, { scroll: false });
+    } else {
+      router.replace("/", { scroll: false });
+    }
+  }, [lazyQuery]);
+
   return (
     <>
+      <style>{`
+      .listbox-item-${activeIndex} {
+        border-color: rgb(var(--black));
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .listbox-item-${activeIndex} {
+          border-color: rgb(var(--white));
+        }
+      }
+    `}</style>
+
       {/* Logo, title and search section */}
       <div className="flex items-start mb-6 mt-1">
         <img
@@ -106,6 +117,7 @@ export const Searcher = () => {
             </div>
             <input
               ref={searchInputRef}
+              autoFocus
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -114,15 +126,41 @@ export const Searcher = () => {
                   ? "Loading search index..."
                   : `Search ${search?.postCount} posts...`
               }
+              onFocus={() => setActiveIndex((i) => (i === -1 ? 0 : i))}
               className="w-full py-4 pl-10 pr-4 text-lg border rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  searchInputRef.current?.blur();
+                } else if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  setActiveIndex((activeIndex + 1) % results.results.length);
+                } else if (e.key === "ArrowUp") {
+                  e.preventDefault();
+                  setActiveIndex(
+                    (activeIndex - 1 + results.results.length) %
+                      results.results.length
+                  );
+                } else if (e.key === "Enter") {
+                  if (activeIndex === -1) {
+                    return;
+                  }
+                  const result = results.results[activeIndex];
+                  if (result) {
+                    window.open(result.link, "_blank");
+                  }
+                }
+              }}
             />
           </div>
         </div>
       </div>
 
       {/* Search results */}
-      <div className="w-full overflow-y-auto max-h-full px-1">
+      <div
+        className="w-full overflow-y-auto max-h-full px-1"
+        onMouseEnter={() => setActiveIndex(-1)}
+      >
         {isLoading ? (
           <div className="text-center py-4 text-gray-500">
             Loading search index...
@@ -132,31 +170,34 @@ export const Searcher = () => {
             Error loading search index
           </div>
         ) : results.results.length > 0 ? (
-          <ListBox
+          <ul
             className="space-y-4 focus-visible:outline-none"
             ref={listboxRef}
-            selectionMode="single"
             aria-label="Search results"
-            selectedKeys={["Enter"]}
           >
-            {results.results.map((result) => (
-              <ListBoxItem
-                key={result.id}
-                textValue={result.title}
-                href={result.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <div className="rounded-lg border border-transparent focus:border-white hover:border-white p-3">
-                  <Header className="text-lg">{result.title}</Header>
+            {results.results.map((result, index) => (
+              <li key={result.id} className="relative isolate">
+                <div
+                  className={`rounded-lg border border-transparent focus:border-white hover:border-white p-3 listbox-item-${index}`}
+                >
+                  <a
+                    className="text-lg"
+                    href={result.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {/* https://www.youtube.com/watch?v=-h9rH539x1k */}
+                    <span className="absolute inset-0 z-10"></span>
+                    {result.title}
+                  </a>
                   <div className="flex justify-between items-center mt-2 text-sm text-gray-500">
-                    <Text>{result.feedTitle}</Text>
-                    <Text>{new Date(result.pubDate).toLocaleDateString()}</Text>
+                    <span>{result.feedTitle}</span>
+                    <span>{new Date(result.pubDate).toLocaleDateString()}</span>
                   </div>
                 </div>
-              </ListBoxItem>
+              </li>
             ))}
-          </ListBox>
+          </ul>
         ) : query.trim() ? (
           <div className="text-center py-4 text-gray-500">No results found</div>
         ) : (

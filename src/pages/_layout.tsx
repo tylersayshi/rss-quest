@@ -11,9 +11,11 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <Meta />
-      <body className="h-screen relative flex flex-col">
-        <main className="flex-1 min-h-0">{children}</main>
-        <Footer />
+      <body>
+        <div className="h-screen relative flex flex-col">
+          <main className="flex-1 min-h-0">{children}</main>
+          <Footer />
+        </div>
       </body>
     </>
   );
