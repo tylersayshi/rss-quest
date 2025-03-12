@@ -234,7 +234,7 @@ export const Searcher = () => {
                     rel="noopener noreferrer"
                   >
                     {/* https://www.youtube.com/watch?v=-h9rH539x1k */}
-                    <span className="absolute inset-0 z-10"></span>
+                    <span className="absolute inset-0 z-10" />
                     {result.title}
                   </a>
                   <div className="flex justify-between items-center mt-2 text-sm text-gray-500">

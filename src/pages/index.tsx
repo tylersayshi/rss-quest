@@ -1,8 +1,5 @@
-import { QueryClient } from "@tanstack/react-query";
 import { Searcher } from "../components/search";
 import { Providers } from "../components/providers";
-
-export const client = new QueryClient();
 
 export default function Home() {
   return (
