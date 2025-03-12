@@ -11,8 +11,8 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <Meta />
-      <body>
-        <main>{children}</main>
+      <body className="h-screen relative flex flex-col">
+        <main className="flex-1 min-h-0">{children}</main>
         <Footer />
       </body>
     </>

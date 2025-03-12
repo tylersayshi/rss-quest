@@ -30,6 +30,7 @@ export const Searcher = () => {
     query: string;
   }>({ results: [], query: "" });
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const listboxRef = useRef<HTMLDivElement>(null);
 
   const {
     data: search,
@@ -61,9 +62,7 @@ export const Searcher = () => {
       }
       if (
         document.activeElement !== searchInputRef.current &&
-        ((e.metaKey && e.key === "k") || !e.metaKey) &&
-        !e.ctrlKey &&
-        !e.altKey
+        ((e.metaKey && e.key === "k") || e.key === "/")
       ) {
         e.preventDefault();
         searchInputRef.current?.focus();
@@ -91,7 +90,7 @@ export const Searcher = () => {
   return (
     <>
       {/* Logo, title and search section */}
-      <div className="flex items-start mb-6">
+      <div className="flex items-start mb-6 mt-1">
         <img
           src="/images/koala.png"
           alt="RSS Quest Koala"
@@ -123,7 +122,7 @@ export const Searcher = () => {
       </div>
 
       {/* Search results */}
-      <div className="w-full">
+      <div className="w-full overflow-y-auto max-h-full px-1">
         {isLoading ? (
           <div className="text-center py-4 text-gray-500">
             Loading search index...
@@ -134,11 +133,11 @@ export const Searcher = () => {
           </div>
         ) : results.results.length > 0 ? (
           <ListBox
-            className="space-y-4"
+            className="space-y-4 focus-visible:outline-none"
+            ref={listboxRef}
             selectionMode="single"
             aria-label="Search results"
             selectedKeys={["Enter"]}
-            onAction={(key) => console.log(key)}
           >
             {results.results.map((result) => (
               <ListBoxItem
