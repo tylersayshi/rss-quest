@@ -74,6 +74,27 @@ const rssFeedUrls = [
   // "https://www.webpro.nl/blog/feed.xml",
 ];
 
+function getTextFromHtml(htmlString: string): string {
+  if (!htmlString) {
+    return "";
+  }
+
+  // Remove HTML tags
+  const withoutTags = htmlString.replace(/<[^>]*>/g, " ");
+
+  // Decode common HTML entities
+  const decoded = withoutTags
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+  // Normalize whitespace
+  return decoded.replace(/\s+/g, " ").trim();
+}
+
 // not all promises are resolved
 export async function getFeedData() {
   const addedUrls = new Set<string>();
@@ -97,7 +118,7 @@ export async function getFeedData() {
           description: item.contentSnippet || item.content || "",
           link: item.link || "",
           pubDate: item.pubDate || "",
-          content: item.content || "",
+          content: item.content ? getTextFromHtml(item.content) : "",
           author: item.author || "",
         });
       }
