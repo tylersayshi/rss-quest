@@ -194,7 +194,7 @@ export const Searcher = () => {
                   }
                   const result = results.results[activeIndex];
                   if (result) {
-                    window.open(result.link, "_blank");
+                    window.open(result.link);
                   }
                 }
               }}
@@ -227,12 +227,7 @@ export const Searcher = () => {
                 <div
                   className={`rounded-lg border border-transparent dark:hover:border-white hover:border-black p-3 listbox-item-${index}`}
                 >
-                  <a
-                    className="text-lg"
-                    href={result.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a className="text-lg" href={result.link}>
                     {/* https://www.youtube.com/watch?v=-h9rH539x1k */}
                     <span className="absolute inset-0 z-10" />
                     {result.title}
