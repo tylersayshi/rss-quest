@@ -28,7 +28,7 @@ export const Searcher = () => {
     query: string;
   }>({ results: [], query: "" });
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const listboxRef = useRef<HTMLUListElement>(null);
+  const containerRef = useRef<HTMLUListElement>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const {
@@ -134,13 +134,60 @@ export const Searcher = () => {
                   searchInputRef.current?.blur();
                 } else if (e.key === "ArrowDown") {
                   e.preventDefault();
-                  setActiveIndex((activeIndex + 1) % results.results.length);
+                  setActiveIndex((a) => {
+                    const newIndex = (a + 1) % results.results.length;
+
+                    setTimeout(() => {
+                      const activeItem = document.querySelector(
+                        `.listbox-item-${newIndex}`
+                      );
+                      if (activeItem && containerRef.current) {
+                        const containerRect =
+                          containerRef.current.getBoundingClientRect();
+                        const activeItemRect =
+                          activeItem.getBoundingClientRect();
+                        // Check if the item is below the visible area
+                        if (activeItemRect.bottom > containerRect.bottom) {
+                          activeItem.scrollIntoView({ block: "nearest" });
+                        }
+                        // Check if the item is above the visible area
+                        else if (activeItemRect.top < containerRect.top) {
+                          activeItem.scrollIntoView({ block: "nearest" });
+                        }
+                      }
+                    }, 0);
+
+                    return newIndex;
+                  });
                 } else if (e.key === "ArrowUp") {
                   e.preventDefault();
-                  setActiveIndex(
-                    (activeIndex - 1 + results.results.length) %
-                      results.results.length
-                  );
+                  setActiveIndex((a) => {
+                    const newIndex =
+                      (a - 1 + results.results.length) % results.results.length;
+
+                    setTimeout(() => {
+                      const activeItem = document.querySelector(
+                        `.listbox-item-${newIndex}`
+                      );
+                      if (activeItem && containerRef.current) {
+                        const containerRect =
+                          containerRef.current.getBoundingClientRect();
+                        const activeItemRect =
+                          activeItem.getBoundingClientRect();
+
+                        // Check if the item is below the visible area
+                        if (activeItemRect.bottom > containerRect.bottom) {
+                          activeItem.scrollIntoView({ block: "nearest" });
+                        }
+                        // Check if the item is above the visible area
+                        else if (activeItemRect.top < containerRect.top) {
+                          activeItem.scrollIntoView({ block: "nearest" });
+                        }
+                      }
+                    }, 0);
+
+                    return newIndex;
+                  });
                 } else if (e.key === "Enter") {
                   if (activeIndex === -1) {
                     return;
@@ -158,7 +205,7 @@ export const Searcher = () => {
 
       {/* Search results */}
       <div
-        className="w-full overflow-y-auto max-h-full px-1"
+        className="w-full min-h-0 px-1"
         onMouseEnter={() => setActiveIndex(-1)}
       >
         {isLoading ? (
@@ -171,8 +218,8 @@ export const Searcher = () => {
           </div>
         ) : results.results.length > 0 ? (
           <ul
-            className="space-y-4 focus-visible:outline-none"
-            ref={listboxRef}
+            className="space-y-4 focus-visible:outline-none overflow-auto max-h-full"
+            ref={containerRef}
             aria-label="Search results"
           >
             {results.results.map((result, index) => (
