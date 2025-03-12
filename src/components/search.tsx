@@ -90,12 +90,12 @@ export const Searcher = () => {
     <>
       <style>{`
       .listbox-item-${activeIndex} {
-        border-color: rgb(var(--black));
+        border-color: black;
       }
 
       @media (prefers-color-scheme: dark) {
         .listbox-item-${activeIndex} {
-          border-color: rgb(var(--white));
+          border-color: white;
         }
       }
     `}</style>
@@ -225,7 +225,7 @@ export const Searcher = () => {
             {results.results.map((result, index) => (
               <li key={result.id} className="relative isolate">
                 <div
-                  className={`rounded-lg border border-transparent focus:border-white hover:border-white p-3 listbox-item-${index}`}
+                  className={`rounded-lg border border-transparent dark:hover:border-white hover:border-black p-3 listbox-item-${index}`}
                 >
                   <a
                     className="text-lg"
