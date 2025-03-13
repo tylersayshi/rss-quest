@@ -1,5 +1,7 @@
-import { getFeedData } from "../../_data/feeds";
-import { RSSFeed } from "../../types";
+import fs from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { getFeedData } from "./_data/feeds";
+import type { RSSFeed } from "./types";
 
 interface SearchIndex {
   invertedIndex: InvertedIndex;
@@ -215,7 +217,7 @@ function buildSearchIndex(feeds: RSSFeed[]): SearchIndex {
   };
 }
 
-export const GET = async () => {
+const getJson = async () => {
   try {
     // Get the feed data
     const feeds = await getFeedData();
@@ -225,23 +227,18 @@ export const GET = async () => {
     const searchIndex = buildSearchIndex(feeds);
     console.timeEnd("Building search index");
     // Return the index as JSON
-    return Response.json({ index: searchIndex, postCount });
+    return { index: searchIndex, postCount };
   } catch (error) {
     console.error("Error generating search index:", error);
-    return new Response(
-      JSON.stringify({ error: "Failed to generate search index" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
   }
 };
 
-export const getConfig = () => {
-  return {
-    render: "static",
-  };
-};
+if (!(await existsSync("public/search.json"))) {
+  const json = await getJson();
+
+  console.time("Writing search index");
+  await fs.writeFile("public/search.json", JSON.stringify(json));
+  console.timeEnd("Writing search index");
+}
+
+process.exit(0);

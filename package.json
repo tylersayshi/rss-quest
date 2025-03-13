@@ -4,30 +4,40 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "VITE_EXPERIMENTAL_WAKU_ROUTER=true waku dev",
-    "build": "VITE_EXPERIMENTAL_WAKU_ROUTER=true waku build --with-netlify-static",
-    "start": "waku start"
+    "generate-search-index": "tsx src/search.json.ts",
+    "predev": "pnpm generate-search-index",
+    "prebuild": "pnpm generate-search-index",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@tyler/duckhawk": "npm:@jsr/tyler__duckhawk@^0.3.2",
-    "@vitejs/plugin-react": "4.3.4",
     "babel-plugin-react-compiler": "19.0.0-beta-40c6c23-20250301",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-server-dom-webpack": "19.0.0",
-    "waku": "0.21.22"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.0.12",
+    "@tailwindcss/postcss": "^4.0.13",
     "@tanstack/query-sync-storage-persister": "^5.67.3",
     "@tanstack/react-query": "^5.67.2",
     "@tanstack/react-query-persist-client": "^5.67.3",
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4",
+    "@tyler/duckhawk": "npm:@jsr/tyler__duckhawk@^0.3.2",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
     "lucide-react": "^0.479.0",
-    "postcss": "8.5.3",
+    "postcss": "^8.5.3",
     "rss-parser": "^3.13.0",
-    "tailwindcss": "4.0.12",
-    "typescript": "5.8.2"
+    "tailwindcss": "^4.0.13",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.1"
   }
 }
