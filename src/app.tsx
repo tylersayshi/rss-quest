@@ -24,7 +24,7 @@ export default function App() {
           <div className="w-full max-w-4xl overflow-y-hidden flex flex-col px-0.5">
             <PersistQueryClientProvider
               client={queryClient}
-              persistOptions={{ persister, maxAge: 1000 * 60 * 60 }}
+              persistOptions={{ persister, maxAge: 1000 * 60 * 60 }} // 1 hr
             >
               <Search />
             </PersistQueryClientProvider>
