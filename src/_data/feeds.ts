@@ -2,7 +2,9 @@ import Parser from "rss-parser";
 import { RSSFeed } from "../types";
 import { allChunked } from "@tyler/duckhawk";
 
-const parser = new Parser();
+const parser = new Parser({
+  timeout: 3 * 60 * 1000, // 3 minutes
+});
 
 const rssFeedUrls = [
   "https://tylur.blog/api/rss.xml",
@@ -11,6 +13,7 @@ const rssFeedUrls = [
   "https://cassidoo.co/rss.xml",
   "https://waku.gg/api/rss.xml",
   "https://blog.isquaredsoftware.com/index.xml",
+  "https://byk.im/rss",
 
   // from francois
   "https://francoisbest.com/posts/feed/rss.xml",
@@ -32,46 +35,41 @@ const rssFeedUrls = [
   "https://ma.ttias.be/cronweekly/index.xml",
   "https://hnblogs.substack.com/feed",
   "https://romain-clement.net/feed/articles/rss.xml",
-  "https://dzhavat.github.io/feed.xml",
-  // "https://www.julian.digital/feed",
+  "https://www.julian.digital/feed",
 
   // from lars
+  // "https://www.webpro.nl/blog/feed.xml",
+  // "http://www.broken-links.com/feed/",
+  // "http://blog.cloudfour.com/feed/",
+  // "http://gent.ilcore.com/feeds/posts/default",
+  // "http://www.stevesouders.com/blog/feed/",
+  // "http://martinfowler.com/feed.atom",
+  // "http://nicolasgallagher.com/feed/",
+  // "http://blog.patrickmeenan.com/feeds/posts/default",
+  // "http://www.phpied.com/feed/",
+  // "http://www.quirksmode.org/blog/atom.xml",
+  // "http://royal.pingdom.com/feed/",
+  // "http://www.standardista.com/feed/",
+  // "http://www.xanthir.com/blog/atom/",
+  // "http://blog.sourcetreeapp.com/feed/",
+  // "http://html5doctor.com/feed/",
   // "http://feeds.feedburner.com/24ways",
   // "http://feeds.feedburner.com/2ality",
   // "http://feeds.feedburner.com/AJAXMagazine",
-  // "http://www.broken-links.com/feed/",
-  // "http://blog.cloudfour.com/feed/",
   // "http://feeds.feedburner.com/codinghorror",
-  // "http://www.daedtech.com/feed",
   // "http://feeds.feedburner.com/dropshadows",
-  // "http://gent.ilcore.com/feeds/posts/default",
   // "http://feeds.feedburner.com/blogspot/amDG",
-  // "http://www.stevesouders.com/blog/feed/",
   // "http://feeds2.feedburner.com/jsmag",
   // "http://feeds.feedburner.com/leaverou",
   // "http://feeds.feedburner.com/lostechies",
   // "http://feeds.feedburner.com/FunctioningForm",
-  // "http://martinfowler.com/feed.atom",
   // "http://feeds.feedburner.com/nczonline",
   // "http://feeds.feedburner.com/nefariousdesigns",
-  // "http://nicolasgallagher.com/feed/",
   // "http://feeds.feedburner.com/PerfectionKills",
-  // "http://blog.patrickmeenan.com/feeds/posts/default",
-  // "http://www.phpied.com/feed/",
-  // "http://www.quirksmode.org/blog/atom.xml",
   // "http://feeds.feedburner.com/adobe_developer_center_html5",
-  // "http://royal.pingdom.com/feed/",
-  // "http://rss1.smashingmagazine.com/feed/",
-  // "http://www.standardista.com/feed/",
-  // "http://www.xanthir.com/blog/atom/",
   // "http://feeds.feedburner.com/WhenCanIUse",
-  // "http://writing.jan.io/feed.xml",
-  // "http://blog.sourcetreeapp.com/feed/",
-  // "http://html5doctor.com/feed/",
   // "http://feeds.feedburner.com/ScottHanselman",
   // "http://feeds.feedburner.com/addyosmani",
-  // "https://stackoverflow.blog/newsletter/feed/",
-  // "https://www.webpro.nl/blog/feed.xml",
 ];
 
 function getTextFromHtml(htmlString: string): string {
@@ -104,7 +102,7 @@ export async function getFeedData() {
       return null;
     }
     try {
-      console.time(`Fetching ${url}`);
+      console.time(`Indexing ${url}`);
       const feed = await parser.parseURL(url);
       const items: RSSFeed["items"] = [];
       const linkSet = new Set<string>();
@@ -122,7 +120,7 @@ export async function getFeedData() {
           author: item.author || "",
         });
       }
-      console.timeEnd(`Fetching ${url}`);
+      console.timeEnd(`Indexing ${url}`);
       console.log(items.length, "items fetched");
       return {
         title: feed.title || "",
