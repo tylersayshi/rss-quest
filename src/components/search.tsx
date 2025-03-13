@@ -137,7 +137,10 @@ export const Search = () => {
               autoFocus
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setActiveIndex(e.target.value.length ? -1 : 0);
+                setQuery(e.target.value);
+              }}
               placeholder={
                 isLoading
                   ? "Loading search index..."
