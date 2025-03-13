@@ -1,26 +1,22 @@
-"use client";
-
-import { useState, useEffect, useRef, useDeferredValue } from "react";
-import { Search } from "lucide-react";
+import { useState, useEffect, useRef, useDeferredValue, useMemo } from "react";
+import { Search as LucSearch } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { SearchEngine, SearchResult } from "../_lib/search-engine";
-import { useRouter_UNSTABLE } from "waku";
+import type { SearchIndex, SearchResult } from "../_lib/search-engine";
+import { SearchEngine } from "../_lib/search-engine";
 
 const fetchSearchIndex = async (): Promise<{
-  engine: SearchEngine;
+  index: SearchIndex;
   postCount: number;
 }> => {
-  const response = await fetch("/api/search.json");
+  const response = await fetch("/search.json");
   if (!response.ok) {
     throw new Error("Failed to load search index");
   }
-  const { index, postCount } = await response.json();
-  const engine = new SearchEngine(index);
-  return { engine, postCount };
+  return response.json();
 };
 
-export const Searcher = () => {
-  const router = useRouter_UNSTABLE();
+export const Search = () => {
+  // const router = useRouter_UNSTABLE();
   const [query, setQuery] = useState("");
   const lazyQuery = useDeferredValue(query);
   const [results, setResults] = useState<{
@@ -41,17 +37,22 @@ export const Searcher = () => {
     staleTime: Infinity,
   });
 
+  const engine = useMemo(
+    () => (search?.index ? new SearchEngine(search.index) : undefined),
+    [search]
+  );
+
   useEffect(() => {
-    if (!search || lazyQuery === results.query) {
+    if (!engine || !search || lazyQuery === results.query) {
       return;
     } else if (!lazyQuery.trim()) {
       setResults({ results: [], query: lazyQuery });
       return;
     }
 
-    const searchResults = search.engine.search(lazyQuery, 25);
+    const searchResults = engine.search(lazyQuery, 25);
     setResults({ results: searchResults, query: lazyQuery });
-  }, [lazyQuery, search]);
+  }, [engine, lazyQuery, results.query, search]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,20 +71,36 @@ export const Searcher = () => {
 
   // Set query from URL parameter
   useEffect(() => {
-    const params = new URLSearchParams(router.query);
+    const params = new URLSearchParams(window.location.search);
     const searchQuery = params.get("q");
     if (searchQuery) {
       setQuery(searchQuery);
       searchInputRef.current?.focus();
     }
-  }, [router.query]);
+  }, []);
 
   useEffect(() => {
-    if (lazyQuery) {
-      router.replace(`/?q=${encodeURIComponent(lazyQuery)}`, { scroll: false });
-    } else {
-      router.replace("/", { scroll: false });
+    // Get current query parameter value
+    const currentUrl = new URL(window.location.href);
+    const currentQuery = currentUrl.searchParams.get("q") || "";
+
+    // Only update if the query parameter value is different
+    const normalizedLazyQuery = lazyQuery || "";
+
+    if (currentQuery === normalizedLazyQuery) {
+      return; // No change needed, values already match
     }
+
+    // Update URL without page reload
+    const newUrl = new URL(window.location.href);
+
+    if (normalizedLazyQuery) {
+      newUrl.searchParams.set("q", normalizedLazyQuery);
+    } else {
+      newUrl.searchParams.delete("q");
+    }
+
+    window.history.pushState({}, "", newUrl);
   }, [lazyQuery]);
 
   return (
@@ -113,7 +130,7 @@ export const Searcher = () => {
           {/* Search bar */}
           <div className="relative flex flex-col gap-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+              <LucSearch className="h-5 w-5 text-gray-400" />
             </div>
             <input
               ref={searchInputRef}
