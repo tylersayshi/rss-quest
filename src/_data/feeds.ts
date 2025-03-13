@@ -14,6 +14,7 @@ const rssFeedUrls = [
   "https://waku.gg/api/rss.xml",
   "https://blog.isquaredsoftware.com/index.xml",
   "https://byk.im/rss",
+  "https://cra.mr/rss.xml",
 
   // from francois
   "https://francoisbest.com/posts/feed/rss.xml",
