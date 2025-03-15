@@ -214,7 +214,7 @@ export const Search = () => {
                   }
                   const result = results.results[activeIndex];
                   if (result) {
-                    window.open(result.link);
+                    window.location.assign(result.link);
                   }
                 }
               }}
