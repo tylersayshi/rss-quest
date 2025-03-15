@@ -7,3 +7,5 @@ Googling for tech blogs is hard. This is a statically generated indexing site fo
 Feeds and posts infrequently changed, so I've set this up to be a static index that will be stored in your browser for near instant search speeds locally.
 
 As the search set grows I may adjust this, but for now, it's quite fast and nice. Give it a try!
+
+If you wanna learn more about the motivation and mechanics behind [rss.quest](https://rss.quest) I wrote a post about it here: https://tylur.blog/the-blog-web/ :)
