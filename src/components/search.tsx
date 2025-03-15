@@ -138,7 +138,7 @@ export const Search = () => {
               type="text"
               value={query}
               onChange={(e) => {
-                setActiveIndex(e.target.value.length ? -1 : 0);
+                setActiveIndex(e.target.value.length ? 0 : -1);
                 setQuery(e.target.value);
               }}
               placeholder={
