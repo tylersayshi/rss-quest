@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate-search-index": "tsx src/search.json.ts",
-    "predev": "pnpm generate-search-index",
-    "prebuild": "pnpm generate-search-index",
+    "searchgen": "tsx src/search.json.ts",
+    "predev": "pnpm searchgen",
+    "prebuild": "pnpm searchgen",
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint .",
