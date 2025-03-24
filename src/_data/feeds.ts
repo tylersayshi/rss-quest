@@ -136,7 +136,7 @@ export async function getFeedData() {
     }
   });
 
-  const results = (await allChunked(feedPromises, 10)) as RSSFeed[];
+  const results = await allChunked(feedPromises, 10);
   console.log(
     results.reduce((acc, cur) => acc + (cur?.items.length ?? 0), 0) +
       " items fetched"
